@@ -1,5 +1,9 @@
 language: python
 
+sudo: required
+
+dist: trusty
+
 env:
   - TOXENV=py26
   - TOXENV=py27
