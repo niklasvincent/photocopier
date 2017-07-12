@@ -7,20 +7,36 @@ import sqlite3
 from collections import namedtuple
 
 
-Photo = namedtuple('Photo', ['x'])
-RKMasterRow = namedtuple(
-    'RKMasterRow',
+Photo = namedtuple(
+    "Photo",
     [
-        'uuid',
-        'modelId',
-        'masterUuid',
-        'lastmodifieddate',
-        'imageDate',
-        'hasAdjustments',
-        'imagePath',
-        'fileSize',
-        'fileName',
-        'createdDate'
+        "path",
+        "created_date",
+        "modified_date",
+        "file_size",
+        "albums"
+    ]
+)
+RKAlbumRow = namedtuple(
+    "RKAlbumRow",
+    [
+        "name",
+        "folderuuid"
+    ]
+)
+RKMasterRow = namedtuple(
+    "RKMasterRow",
+    [
+        "uuid",
+        "modelId",
+        "masterUuid",
+        "lastmodifieddate",
+        "imageDate",
+        "hasAdjustments",
+        "imagePath",
+        "fileSize",
+        "fileName",
+        "createdDate"
     ]
 )
 
@@ -33,7 +49,19 @@ class Database(object):
         self.conn = sqlite3.connect(database_filename)
 
     def get_all_photos(self):
-        return self._get_masters()
+        photos = []
+        for master in self._get_masters():
+            albums = set([a.name for a in self._get_albums_for_photo(master.modelId)])
+            photos.append(
+                Photo(
+                    path=master.imagePath,
+                    created_date=master.createdDate,
+                    modified_date=master.lastmodifieddate,
+                    file_size=master.fileSize,
+                    albums=albums
+                )
+            )
+        return photos
 
     def _full_image_path(self, image_path):
         return os.path.join(self.photos_full_dirname, "Masters", image_path)
@@ -42,6 +70,34 @@ class Database(object):
     def _datetime_from_core_data_timestamp(timestamp, timezone_offset):
         epoch_offset = 978307200  # Seconds between Jan 1, 1970 and Jan 1, 2001
         return datetime.datetime.fromtimestamp(timestamp + epoch_offset + timezone_offset)
+
+    def _get_albums_for_photo(self, model_id):
+        def _row_factory(cursor, row):
+            return RKAlbumRow(
+                name=row[0],
+                folderuuid=row[1]
+            )
+
+        sql = """SELECT
+            RKAlbum.name,
+            RKAlbum.folderuuid
+        FROM
+            RKAlbum,
+            RKVersion,
+            RKAlbumVersion
+        WHERE
+            RKVersion.modelId = RKAlbumVersion.versionId AND
+            RKAlbumVersion.albumId = RKAlbum.modelID AND
+            RKAlbum.isInTrash = 0 AND
+            RKAlbum.isHidden = 0 AND
+            RKAlbum.isMagic = 0 AND
+            RKVersion.modelID = ?"""
+        self.conn.row_factory = _row_factory
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (model_id,))
+        rows = cursor.fetchall()
+        self.conn.row_factory = None
+        return rows
 
     def _get_masters(self):
         def _row_factory(cursor, row):
