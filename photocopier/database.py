@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, \
+    print_function, unicode_literals
 
 import datetime
 import os
@@ -45,13 +46,19 @@ class Database(object):
 
     def __init__(self, photos_full_dirname):
         self.photos_full_dirname = photos_full_dirname
-        database_filename = os.path.join(photos_full_dirname, 'database', 'photos.db')
+        database_filename = os.path.join(
+            photos_full_dirname,
+            'database',
+            'photos.db'
+        )
         self.conn = sqlite3.connect(database_filename)
 
     def get_all_photos(self):
         photos = []
         for master in self._get_masters():
-            albums = set([a.name for a in self._get_albums_for_photo(master.modelId)])
+            albums = set([a.name for a in
+                          self._get_albums_for_photo(master.modelId)
+                          ])
             photos.append(
                 Photo(
                     path=master.imagePath,
@@ -69,7 +76,9 @@ class Database(object):
     @staticmethod
     def _datetime_from_core_data_timestamp(timestamp, timezone_offset):
         epoch_offset = 978307200  # Seconds between Jan 1, 1970 and Jan 1, 2001
-        return datetime.datetime.fromtimestamp(timestamp + epoch_offset + timezone_offset)
+        return datetime.datetime.fromtimestamp(
+            timestamp + epoch_offset + timezone_offset
+        )
 
     def _get_albums_for_photo(self, model_id):
         def _row_factory(cursor, row):
