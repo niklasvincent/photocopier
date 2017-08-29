@@ -15,7 +15,8 @@ Photo = namedtuple(
         "created_date",
         "modified_date",
         "file_size",
-        "albums"
+        "albums",
+        "checksum"
     ]
 )
 RKAlbumRow = namedtuple(
@@ -65,7 +66,8 @@ class Database(object):
                     created_date=master.createdDate,
                     modified_date=master.lastmodifieddate,
                     file_size=master.fileSize,
-                    albums=albums
+                    albums=albums,
+                    checksum=None
                 )
             )
         return photos
