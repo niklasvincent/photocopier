@@ -1,0 +1,5 @@
+docutils
+flake8
+isort
+multilint
+pytest

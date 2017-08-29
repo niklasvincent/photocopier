@@ -1,18 +1,16 @@
-language: python
-
-sudo: required
-
+sudo: false
 dist: trusty
 
-env:
-  - TOXENV=py27
-  - TOXENV=py33
-  - TOXENV=py34
-  - TOXENV=py36
-
-install: pip install tox
-
-script: tox
+language: python
+python: 3.6
+cache: pip
 
 notifications:
   email: false
+
+language: python
+
+install:
+  - pip install tox
+
+script: tox
