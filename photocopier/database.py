@@ -5,7 +5,9 @@ from __future__ import (
 
 import datetime
 import os
+import shutil
 import sqlite3
+import tempfile
 from collections import namedtuple
 
 Photo = namedtuple(
@@ -52,7 +54,16 @@ class Database(object):
             'database',
             'photos.db'
         )
-        self.conn = sqlite3.connect(database_filename)
+        database_snapshot_filename = self._create_snapshot(
+            database_filename=database_filename
+        )
+        self.conn = sqlite3.connect(database_snapshot_filename)
+
+    def _create_snapshot(self, database_filename):
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, 'photos.db')
+        shutil.copy2(database_filename, temp_path)
+        return temp_path
 
     def get_all_photos(self):
         photos = []
