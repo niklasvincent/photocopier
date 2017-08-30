@@ -34,7 +34,8 @@ def get_all_photos(photos_dirname=None, calculate_checksum=False):
 
     if not photos_dirname:
         photos_dirname = r"~/Pictures/Photos Library.photoslibrary"
-        photos_full_dirname = os.path.expanduser(photos_dirname)
+
+    photos_full_dirname = os.path.expanduser(photos_dirname)
 
     if not os.path.exists(photos_full_dirname):
         print("Error: No such Photos library: {}".format(photos_dirname))
