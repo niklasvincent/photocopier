@@ -4,6 +4,7 @@ from __future__ import (
 )
 
 import argparse
+import glob
 import hashlib
 import json
 import os
@@ -11,6 +12,15 @@ import sys
 from datetime import date, datetime
 
 from .database import Database, Photo
+
+
+def locate_photos_library_directory():
+    """Get location of Photos library directory for the current user"""
+    pictures_directory = os.path.expanduser(r"~/Pictures")
+    candidates = glob.glob(pictures_directory + "/*.photoslibrary")
+    if not candidates:
+        return None
+    return candidates[0]
 
 
 def get_all_photos(photos_dirname=None, calculate_checksum=False):
@@ -33,11 +43,14 @@ def get_all_photos(photos_dirname=None, calculate_checksum=False):
         )
 
     if not photos_dirname:
-        photos_dirname = r"~/Pictures/Photos Library.photoslibrary"
+        photos_full_dirname = locate_photos_library_directory()
+    else:
+        photos_full_dirname = os.path.expanduser(photos_dirname)
 
-    photos_full_dirname = os.path.expanduser(photos_dirname)
-
-    if not os.path.exists(photos_full_dirname):
+    if not photos_full_dirname:
+        print("Error: No Photos library found. Please provide one.")
+        sys.exit(1)
+    elif not os.path.exists(photos_full_dirname):
         print("Error: No such Photos library: {}".format(photos_dirname))
         sys.exit(1)
 

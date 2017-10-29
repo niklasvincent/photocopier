@@ -87,10 +87,14 @@ class Database(object):
         return os.path.join(self.photos_full_dirname, "Masters", image_path)
 
     @staticmethod
-    def _datetime_from_core_data_timestamp(timestamp, timezone_offset):
+    def _datetime_from_core_data_timestamp(timestamp, timezone_offset=None):
         epoch_offset = 978307200  # Seconds between Jan 1, 1970 and Jan 1, 2001
+
+        timezone_offset = timezone_offset if timezone_offset else 0
+        unix_timestamp = timestamp if timestamp else 0
+
         return datetime.datetime.fromtimestamp(
-            timestamp + epoch_offset + timezone_offset
+            unix_timestamp + epoch_offset + timezone_offset
         )
 
     def _get_albums_for_photo(self, model_id):
