@@ -14,6 +14,12 @@ from datetime import date, datetime
 from .database import Database, Photo
 
 
+class PhotosLibraryNotFoundException(Exception):
+    """Exception indicating Photos library could not be found"""
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
+
 def locate_photos_library_directory():
     """Get location of Photos library directory for the current user"""
     pictures_directory = os.path.expanduser(r"~/Pictures")
@@ -48,11 +54,13 @@ def get_all_photos(photos_dirname=None, calculate_checksum=False):
         photos_full_dirname = os.path.expanduser(photos_dirname)
 
     if not photos_full_dirname:
-        print("Error: No Photos library found. Please provide one.")
-        sys.exit(1)
+        raise PhotosLibraryNotFoundException(
+            "No Photos library found. Please provide one."
+        )
     elif not os.path.exists(photos_full_dirname):
-        print("Error: No such Photos library: {}".format(photos_dirname))
-        sys.exit(1)
+        raise PhotosLibraryNotFoundException(
+            "No such Photos library: {}".format(photos_dirname)
+        )
 
     db = Database(photos_full_dirname=photos_full_dirname)
 
@@ -101,16 +109,24 @@ def main():
 
     photos_dirname = None if not args.directory else args.directory
 
-    if args.list:
-        photos = get_all_photos(
-            photos_dirname=photos_dirname,
-            calculate_checksum=args.checksums
-        )
-        expanded_tuples = [p._asdict() for p in photos]
+    try:
+        if args.list:
+            photos = get_all_photos(
+                photos_dirname=photos_dirname,
+                calculate_checksum=args.checksums
+            )
+            expanded_tuples = [p._asdict() for p in photos]
 
-        print(json.dumps(
-            expanded_tuples,
-            default=json_serial,
-            sort_keys=True,
-            indent=4
-        ))
+            print(json.dumps(
+                {
+                    "photos": expanded_tuples,
+                },
+                default=json_serial,
+                sort_keys=True,
+                indent=4
+            ))
+        elif not args.list:
+            parser.print_help()
+    except PhotosLibraryNotFoundException as e:
+        print(e)
+        sys.exit(1)
