@@ -12,12 +12,7 @@ import sys
 from datetime import date, datetime
 
 from .database import Database, Photo
-
-
-class PhotosLibraryNotFoundException(Exception):
-    """Exception indicating Photos library could not be found"""
-    def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
+from .exceptions import PhotosLibraryNotFoundException
 
 
 def locate_photos_library_directory():
@@ -27,6 +22,26 @@ def locate_photos_library_directory():
     if not candidates:
         return None
     return candidates[0]
+
+
+def locate_photos_library_database_file(photos_full_dirname):
+    """Get location of Photos SQLite database filename"""
+    candidates = [
+        os.path.join(
+            photos_full_dirname,
+            "database",
+            "Library.apdb"
+        ),
+        os.path.join(
+            photos_full_dirname,
+            "database",
+            "photos.db"
+        )
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return None
 
 
 def get_all_photos(photos_dirname=None, calculate_checksum=False):
@@ -62,7 +77,20 @@ def get_all_photos(photos_dirname=None, calculate_checksum=False):
             "No such Photos library: {}".format(photos_dirname)
         )
 
-    db = Database(photos_full_dirname=photos_full_dirname)
+    photos_library_filename = locate_photos_library_database_file(
+        photos_full_dirname
+    )
+    if not photos_library_filename:
+        raise PhotosLibraryNotFoundException(
+            "Could not find a compatible SQLite database in {}".format(
+                photos_full_dirname
+            )
+        )
+
+    db = Database(
+        photos_full_dirname=photos_full_dirname,
+        photos_library_filename=photos_library_filename
+    )
 
     photos = db.get_all_photos()
 

@@ -7,9 +7,13 @@ import photocopier
 from photocopier.database import Photo
 
 test_matrix = [
+    # {
+    #     "OS X": "10.12.6",
+    #     "Photos": "2.0 3161.4.140"
+    # },
     {
-        "OS X": "10.12.6",
-        "Photos": "2.0 3161.4.140"
+        "OS X": "10.11.6",
+        "Photos": "1.5 370.42.0"
     }
 ]
 
