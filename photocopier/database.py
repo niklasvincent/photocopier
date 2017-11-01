@@ -56,7 +56,8 @@ class Database(object):
         )
         self.conn = sqlite3.connect(database_snapshot_filename)
 
-    def _create_snapshot(self, database_filename):
+    @staticmethod
+    def _create_snapshot(database_filename):
         temp_dir = tempfile.gettempdir()
         temp_path = os.path.join(temp_dir, 'photos.db')
         try:
