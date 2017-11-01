@@ -50,3 +50,8 @@ To use ``photocopier`` in your own tools, simply import it:
 
   import photocopier
   photos = photocopier.get_all_photos()
+
+
+.. image:: https://api.codacy.com/project/badge/Grade/97e59ffac4fc4929819e4a044418ada0
+   :alt: Codacy Badge
+   :target: https://www.codacy.com/app/niklas/photocopier?utm_source=github.com&utm_medium=referral&utm_content=nlindblad/photocopier&utm_campaign=badger
