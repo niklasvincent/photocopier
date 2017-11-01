@@ -5,6 +5,10 @@ photocopier
 .. image:: https://travis-ci.org/nlindblad/photocopier.svg?branch=master
     :target: https://travis-ci.org/nlindblad/photocopier
 
+.. image:: https://api.codacy.com/project/badge/Grade/97e59ffac4fc4929819e4a044418ada0
+   :alt: Codacy Badge
+   :target: https://www.codacy.com/app/niklas/photocopier?utm_source=github.com&utm_medium=referral&utm_content=nlindblad/photocopier&utm_campaign=badger
+
 A small Python library (with bundled CLI) for listing all photos contained in an OS X Photos library.
 
 Since OS X 10.10.3, Photos has been the default photo management solution. The export options leave a lot to be desired, especially for larger collections.
