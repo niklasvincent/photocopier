@@ -2,4 +2,5 @@ docutils
 flake8
 isort
 multilint
+Pygments
 pytest

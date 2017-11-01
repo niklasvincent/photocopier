@@ -10,6 +10,8 @@ import sqlite3
 import tempfile
 from collections import namedtuple
 
+from .exceptions import PhotosLibraryNotFoundException
+
 Photo = namedtuple(
     "Photo",
     [
@@ -47,23 +49,25 @@ RKMasterRow = namedtuple(
 
 class Database(object):
 
-    def __init__(self, photos_full_dirname):
+    def __init__(self, photos_full_dirname, photos_library_filename):
         self.photos_full_dirname = photos_full_dirname
-        database_filename = os.path.join(
-            photos_full_dirname,
-            'database',
-            'photos.db'
-        )
         database_snapshot_filename = self._create_snapshot(
-            database_filename=database_filename
+            database_filename=photos_library_filename
         )
         self.conn = sqlite3.connect(database_snapshot_filename)
 
     def _create_snapshot(self, database_filename):
         temp_dir = tempfile.gettempdir()
         temp_path = os.path.join(temp_dir, 'photos.db')
-        shutil.copy2(database_filename, temp_path)
-        return temp_path
+        try:
+            shutil.copy2(database_filename, temp_path)
+            return temp_path
+        except FileNotFoundError:
+            raise PhotosLibraryNotFoundException(
+                "No such file {database_filename}".format(
+                    database_filename=database_filename
+                )
+            )
 
     def get_all_photos(self):
         photos = []
