@@ -58,6 +58,7 @@ def get_all_photos(photos_dirname=None, calculate_checksum=False):
             path=photo.path,
             created_date=photo.created_date,
             modified_date=photo.modified_date,
+            taken_date=photo.taken_date,
             file_size=photo.file_size,
             albums=photo.albums,
             checksum=checksum

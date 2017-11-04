@@ -18,6 +18,7 @@ Photo = namedtuple(
         "path",
         "created_date",
         "modified_date",
+        "taken_date",
         "file_size",
         "albums",
         "checksum"
@@ -81,6 +82,7 @@ class Database(object):
                     path=master.imagePath,
                     created_date=master.createdDate,
                     modified_date=master.lastmodifieddate,
+                    taken_date=master.imageDate,
                     file_size=master.fileSize,
                     albums=albums,
                     checksum=None
@@ -99,7 +101,7 @@ class Database(object):
         unix_timestamp = timestamp if timestamp else 0
 
         return datetime.datetime.fromtimestamp(
-            unix_timestamp + epoch_offset + timezone_offset
+            int(unix_timestamp) + epoch_offset + timezone_offset
         )
 
     def _get_albums_for_photo(self, model_id):

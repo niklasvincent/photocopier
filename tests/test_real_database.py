@@ -7,10 +7,10 @@ import photocopier
 from photocopier.database import Photo
 
 test_matrix = [
-    # {
-    #     "OS X": "10.12.6",
-    #     "Photos": "2.0 3161.4.140"
-    # },
+    {
+        "OS X": "10.12.6",
+        "Photos": "2.0 3161.4.140"
+    },
     {
         "OS X": "10.11.6",
         "Photos": "1.5 370.42.0"
@@ -18,12 +18,12 @@ test_matrix = [
 ]
 
 
-def json_object_pairs_hook(pairs, date_format="%Y-%m-%dT%H:%M:%S.%f"):
+def json_object_pairs_hook(pairs):
     """JSON parser hook for properly converting datetime strings and sets"""
     d = {}
     for k, v in pairs:
-        if k in ["created_date", "modified_date"]:
-            d[k] = datetime.datetime.strptime(v, date_format)
+        if k in ["created_date", "modified_date", "taken_date"]:
+            d[k] = datetime.datetime.strptime(v, "%Y-%m-%dT%H:%M:%S")
         elif k == "albums":
             d[k] = set(v)
         else:
@@ -60,4 +60,6 @@ def test_real_databases():
                 f,
                 object_pairs_hook=json_object_pairs_hook
             )["photos"]]
-        assert expected_photos == actual_photos
+        assert len(expected_photos) == len(actual_photos)
+        for i, expected_photo in enumerate(expected_photos):
+            assert expected_photo == actual_photos[i]
